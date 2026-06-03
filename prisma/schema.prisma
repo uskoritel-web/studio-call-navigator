@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("operator")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id                String        @id @default(cuid())
+  name              String?
+  phone             String
+  city              String?
+  source            String?
+  status            String        @default("Новый")
+  segment           String?
+  subsegment        String?
+  objectType        String?
+  finishingType     String?
+  scenario          String?
+  area              String?
+  rooms             String?
+  keyDate           DateTime?
+  budgetRange       String?
+  timeline          String?
+  decisionMaker     String?
+  mainPain          String?
+  mainObjection     String?
+  needsDesign       Boolean       @default(false)
+  needsRepair       Boolean       @default(false)
+  needsCompletion   Boolean       @default(false)
+  needsFurniture    Boolean       @default(false)
+  needsKitchen      Boolean       @default(false)
+  needsBathroom     Boolean       @default(false)
+  needsAcceptance   Boolean       @default(false)
+  hasDesigner       Boolean       @default(false)
+  hasContractor     Boolean       @default(false)
+  hasProject        Boolean       @default(false)
+  fitScore          Int           @default(0)
+  intentScore       Int           @default(0)
+  leadGrade         String?
+  currentFunnel     String?
+  nextAction        String?
+  nextActionDate    DateTime?
+  assignedTo        String?
+  doNotCall         Boolean       @default(false)
+  notes             String?
+  lastCallAt        DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  calls             CallSession[]
+  improvements      Improvement[]
+}
+
+model CallSession {
+  id                   String   @id @default(cuid())
+  leadId               String
+  operatorId           String?
+  startedAt            DateTime @default(now())
+  endedAt              DateTime?
+  result               String?
+  selectedSegment      String?
+  selectedSubsegment   String?
+  selectedFunnel       String?
+  answersJson          String?
+  objectionsJson       String?
+  nextAction           String?
+  nextActionDate       DateTime?
+  comment              String?
+  fitScoreAfterCall    Int?
+  intentScoreAfterCall Int?
+  leadGradeAfterCall   String?
+  lead                 Lead     @relation(fields: [leadId], references: [id])
+}
+
+model Node {
+  id               String   @id @default(cuid())
+  title            String
+  type             String
+  parentId         String?
+  description      String?
+  operatorHint     String?
+  sortOrder        Int      @default(0)
+  status           String   @default("active")
+  color            String?
+  defaultFunnelId  String?
+  x                Float?
+  y                Float?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Edge {
+  id             String @id @default(cuid())
+  sourceNodeId   String
+  targetNodeId   String
+  label          String?
+  condition      String?
+  sortOrder      Int    @default(0)
+}
+
+model Funnel {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  stagesJson  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Service {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  whenToOffer    String?
+  whenNotToOffer String?
+  operatorPhrase String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  text        String
+  segment     String?
+  order       Int      @default(0)
+  optionsJson String?
+  fieldKey    String?
+  scoringJson String?
+  nextJson    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScriptHint {
+  id         String   @id @default(cuid())
+  title      String
+  type       String
+  segment    String?
+  subsegment String?
+  funnel     String?
+  text       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Objection {
+  id        String   @id @default(cuid())
+  title     String
+  text      String
+  answer    String
+  segment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Improvement {
+  id          String   @id @default(cuid())
+  userId      String
+  leadId      String?
+  type        String
+  category    String?
+  title       String
+  description String
+  context     String?
+  status      String   @default("новое")
+  priority    String?
+  votes       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lead        Lead?    @relation(fields: [leadId], references: [id])
+}
