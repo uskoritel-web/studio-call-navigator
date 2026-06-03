@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Studio Call Navigator
 
-## Getting Started
+**MVP система для операторов холодного обзвона** студии дизайна, ремонта, комплектации и мебели.
 
-First, run the development server:
+## Возможности
+
+✅ **Импорт лидов** — текстом, файлами (CSV/TXT/Excel), заглушка для DMP.ONE API  
+✅ **Классификация звонка** — новостройка/вторичка/коммерция, тип отделки, сценарии  
+✅ **Подсказки оператору** — 160+ скриптов, вопросов, ответов на возражения  
+✅ **Умный скоринг** — Fit/Intent Score, автоматический Grade (A/B/C/D)  
+✅ **Роутинг по воронкам** — автоподбор воронки на основе сегмента клиента  
+✅ **База знаний** — услуги, скрипты, возражения в БД
+
+## Технологии
+
+- **Next.js 16** + TypeScript
+- **Prisma** + SQLite (легко мигрировать на PostgreSQL)
+- **Tailwind CSS**
+- **React Flow** (для карты сегментов — в планах)
+
+## Установка
 
 ```bash
+# Клонировать репозиторий
+git clone https://github.com/uskoritel-web/studio-call-navigator.git
+cd studio-call-navigator
+
+# Установить зависимости
+npm install
+
+# Применить схему БД
+npm run db:push
+
+# Заполнить seed-данные (160+ скриптов, тестовые лиды)
+npm run db:seed
+
+# Запустить dev-сервер
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Структура проекта
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+/app
+  /api/import         # API endpoints для импорта лидов
+  /call/[id]          # Экран звонка
+  /import             # Страница импорта
+  page.tsx            # Главная — список лидов
 
-## Learn More
+/lib
+  prisma.ts           # Prisma Client
+  scoring.ts          # Логика скоринга лидов
+  routing.ts          # Логика маршрутизации по воронкам
 
-To learn more about Next.js, take a look at the following resources:
+/prisma
+  schema.prisma       # Схема БД
+  seed.ts             # Seed с 160+ скриптами
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Импорт лидов
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 1. Текстом
+Вставьте номера в любом формате:
+```
++7 (912) 345-67-89
+89123456790
++79123456791, 89123456792
+```
 
-## Deploy on Vercel
+### 2. Файлом
+Загрузите CSV, TXT или Excel — система автоматически найдёт все телефоны.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 3. DMP.ONE (заглушка)
+DMP.ONE не предоставляет публичный API. Экспортируйте CSV из их интерфейса и загрузите через "Импорт файлом".
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Экран звонка
+
+**3 колонки:**
+
+1. **Карточка лида** — телефон, источник, Fit/Intent Score, Grade
+2. **Классификация** — кнопки выбора сегмента, типа отделки, сценария → автоподбор воронки
+3. **Подсказки оператору** — что сказать, следующий шаг, скрипты, предупреждения
+
+## Seed-данные
+
+После `npm run db:seed` в БД появятся:
+
+- 👤 2 пользователя (admin@example.com / operator@example.com)
+- 🛠️ 8 услуг (дизайн, ремонт, комплектация, кухня, мебель, приёмка...)
+- 🎯 7 воронок (полный комплекс, дизайн-проект, ремонт без дизайна, кухня/мебель...)
+- ❓ 8 вопросов квалификации
+- 📝 **160+ скриптов**: стартовые фразы, вопросы, объяснение ценности услуг, ответы на возражения, завершение звонка, follow-up
+- 💬 7 возражений
+- 👥 6 тестовых лидов (новостройка, вторичка, коммерция...)
+
+## Roadmap (следующие итерации)
+
+- [ ] React Flow карта сегментов
+- [ ] Модуль улучшений (саморазвитие системы — команда предлагает улучшения)
+- [ ] Запись результата звонка в БД
+- [ ] Админка для редактирования скриптов
+- [ ] Аналитика (конверсия по сегментам, воронкам, операторам)
+- [ ] Переход на PostgreSQL
+- [ ] Интеграция с телефонией
+- [ ] Авторизация и роли (operator/admin)
+
+## Deploy на Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/uskoritel-web/studio-call-navigator)
+
+После деплоя на Vercel:
+1. В настройках проекта добавьте Environment Variable: `DATABASE_URL=file:./dev.db`
+2. Запустите seed через Vercel CLI или вручную в prod
+
+## Лицензия
+
+MIT
+
+---
+
+**Создано с помощью [Claude Code](https://claude.com/claude-code)**
