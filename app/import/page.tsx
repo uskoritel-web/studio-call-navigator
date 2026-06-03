@@ -12,58 +12,30 @@ export default function ImportPage() {
 
   const handleTextImport = async () => {
     setIsImporting(true);
-    try {
-      const res = await fetch('/api/import/text', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textInput }),
-      });
-      const data = await res.json();
-      setResult(data);
-      if (data.success) setTextInput('');
-    } catch (error) {
-      setResult({ success: false, count: 0, message: 'Ошибка импорта' });
-    } finally {
+    // Демо-версия без БД
+    setTimeout(() => {
+      setResult({ success: false, count: 0, message: 'Импорт отключен в demo-версии. Подключите БД для полного функционала.' });
       setIsImporting(false);
-    }
+    }, 500);
   };
 
   const handleFileImport = async () => {
     if (!file) return;
     setIsImporting(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch('/api/import/file', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setResult(data);
-      if (data.success) setFile(null);
-    } catch (error) {
-      setResult({ success: false, count: 0, message: 'Ошибка импорта файла' });
-    } finally {
+    // Демо-версия без БД
+    setTimeout(() => {
+      setResult({ success: false, count: 0, message: 'Импорт отключен в demo-версии. Подключите БД для полного функционала.' });
       setIsImporting(false);
-    }
+    }, 500);
   };
 
   const handleDmpImport = async () => {
     setIsImporting(true);
-    try {
-      const res = await fetch('/api/import/dmp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: dmpApiKey }),
-      });
-      const data = await res.json();
-      setResult(data);
-    } catch (error) {
-      setResult({ success: false, count: 0, message: 'Ошибка подключения к DMP.ONE' });
-    } finally {
+    // Демо-версия без БД
+    setTimeout(() => {
+      setResult({ success: false, count: 0, message: 'Импорт отключен в demo-версии. Подключите БД для полного функционала.' });
       setIsImporting(false);
-    }
+    }, 500);
   };
 
   return (

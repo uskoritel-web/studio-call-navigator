@@ -1,15 +1,19 @@
-import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { mockLeads } from '@/lib/mock-data';
 
 export default async function HomePage() {
-  const leads = await prisma.lead.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 20,
-  });
+  const leads = mockLeads;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Demo banner */}
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>🚧 Demo-версия</strong> — используются моковые данные. Для полного функционала подключите БД (Neon, Turso или др.)
+          </p>
+        </div>
+
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Studio Call Navigator</h1>
           <div className="flex gap-3">

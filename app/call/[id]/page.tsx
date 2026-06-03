@@ -1,12 +1,12 @@
-import { prisma } from '@/lib/prisma';
 import { getRecommendedRoute } from '@/lib/routing';
 import { calculateLeadScore } from '@/lib/scoring';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { mockLeads, mockScripts } from '@/lib/mock-data';
 
 export default async function CallPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const lead = await prisma.lead.findUnique({ where: { id } });
+  const lead = mockLeads.find(l => l.id === id);
 
   if (!lead) {
     notFound();
@@ -15,16 +15,9 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
   const route = getRecommendedRoute(lead);
   const score = calculateLeadScore(lead);
 
-  const scripts = await prisma.scriptHint.findMany({
-    where: {
-      OR: [
-        { segment: lead.segment },
-        { subsegment: lead.subsegment },
-        { segment: null },
-      ],
-    },
-    take: 10,
-  });
+  const scripts = mockScripts.filter(
+    s => s.segment === lead.segment || s.subsegment === lead.subsegment || !s.segment
+  ).slice(0, 10);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
